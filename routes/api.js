@@ -473,6 +473,46 @@ router.get("/download/ytmp3", async (req, res, next) => {
 	}
 });
 
+router.get("/download/mediafire", async (req, res, next) => {
+    var apikey = req.query.apikey;
+    var url = req.query.url;
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!url)
+        return res.json({
+            status: false,
+            creator: `RizzPiw`,
+            message: "Linknya Mana Anying?",
+        });
+    if (listkey.includes(apikey)) {
+        try {
+            const mediafireDl = async (url) => {
+                const response = await axios.get(url);
+                const $ = cheerio.load(response.data);
+                const hasil = [];
+                const link = $('a#downloadButton').attr('href');
+                const size = $('a#downloadButton').text().replace('Download', '').replace('(', '').replace(')', '').replace('\n', '').trim();
+                const seplit = link.split('/');
+                const nama = seplit[5];
+                const mime = nama.split('.')[1];
+                hasil.push({ nama, mime, size, link });
+                return hasil;
+            };
+
+            const downloadInfo = await mediafireDl(url);
+            res.json({
+                status: true,
+                creator: `RizzPiw`,
+                result: downloadInfo,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
+});
+
 router.get("/download/ytmp4", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	var url = req.query.url;
