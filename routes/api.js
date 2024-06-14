@@ -2872,9 +2872,9 @@ router.get("/game/tebakgambar", async (req, res, next) => {
 // Simi
 router.get("/ai/simi", async (req, res, next) => {
 var apikey = req.query.apikey;
-var url = req.query.query;
+var query = req.query.query;
 if (!apikey) return res.json(loghandler.noapikey);
-if (!url)
+if (!text)
 return res.json({
 status: false,
 creator: `RizzPiw`,
