@@ -2869,6 +2869,46 @@ router.get("/game/tebakgambar", async (req, res, next) => {
 	}
 });
 
+// Simi
+router.get("/ai/simi", async (req, res, next) => {
+var apikey = req.query.apikey;
+var url = req.query.query;
+if (!apikey) return res.json(loghandler.noapikey);
+if (!url)
+return res.json({
+status: false,
+creator: `RizzPiw`,
+message: "Masukkan Teks Nya",
+});
+if (listkey.includes(apikey)) {
+try {
+const simi = async (query) => {
+const url = 'https://simsimi.vn/web/simtalk';
+const headers = {
+'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+Accept: 'application/json, text/javascript, */*; q=0.01',
+'X-Requested-With': 'XMLHttpRequest',
+'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36',
+Referer: 'https://simsimi.vn/'
+};
+const response = await axios.post(url, `text=${encodeURIComponent(query)}&lc=id`, { headers });
+return response.data.success;
+}
+const hasil_nya = await simi(query);
+res.json({
+status: true,
+creator: `RizzPiw`,
+result: hasil_nya,
+});
+} catch (e) {
+console.log(e);
+res.json(loghandler.error);
+}
+} else {
+res.json(loghandler.apikey);
+}
+});
+
 // other
 
 router.get("/other/github-stalk", async (req, res, next) => {
