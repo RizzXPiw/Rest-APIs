@@ -2902,7 +2902,7 @@ result: hasil_nya,
 });
 } catch (e) {
 console.log(e);
-res.json(loghandler.error);
+res.json(`${e.message}`);
 }
 } else {
 res.json(loghandler.apikey);
