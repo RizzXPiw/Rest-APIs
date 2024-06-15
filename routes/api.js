@@ -3024,7 +3024,21 @@ router.get("/ai/gpt-3turbo", async (req, res, next) => {
 });
 
 // Tools
-const CF_RANGE = [
+router.get("/tools/subfinder", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var domain = req.query.domain;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!domain)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan domain yang ingin diperiksa.",
+    });
+
+  if (listkey.includes(apikey)) {
+    async function checkDNS(domain) {
+     const CF_RANGE = [
   "173.245.48.0/20",
   "103.21.244.0/22",
   "103.22.200.0/22",
@@ -3041,21 +3055,6 @@ const CF_RANGE = [
   "172.64.0.0/13",
   "131.0.72.0/22"
 ];
-
-router.get("/tools/subfinder", async (req, res, next) => {
-  var apikey = req.query.apikey;
-  var domain = req.query.domain;
-
-  if (!apikey) return res.json(loghandler.noapikey);
-  if (!domain)
-    return res.json({
-      status: false,
-      creator: `RizzPiw`,
-      message: "Masukkan domain yang ingin diperiksa.",
-    });
-
-  if (listkey.includes(apikey)) {
-    async function checkDNS(domain) {
       console.log("Checking DNS: " + domain);
       try {
         let addresses = await dns.promises.resolve4(domain);
