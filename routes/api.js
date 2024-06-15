@@ -2961,8 +2961,63 @@ router.get("/ai/gpt", async (req, res, next) => {
     }
 });
 
-// other
+router.get("/ai/gpt-3turbo", async (req, res, next) => {
+    var apikey = req.query.apikey;
+    var text = req.query.text;
 
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!text)
+        return res.json({
+            status: false,
+            creator: `RizzPiw`,
+            message: "Masukkan Teks Nya",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+          const gptResponse = async (text) => {
+          const today = new Date();
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+         const hari = today.toLocaleDateString('id-ID', { weekday: 'long' });
+         const tanggal = today.toLocaleDateString('id-ID', options);
+         const jam = today.toLocaleTimeString('id-ID');
+                const url = 'https://nexra.aryahcr.cc/api/chat/gpt';
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                const body = {
+                    messages: [
+                        { role: "assistant", content: `Perkenalkan nama kamu adalah Assisten AI kamu dapat menjawab semua jawaban Dan semua pertanyaan yang di beri oleh semua orang, kamu dapat mencari jawaban yang tepat melalui website google.com, bing.com, openai.com, dll agar pengetahuan kamu lebih luas dan lebih pintar Hari : ${hari}, Tanggal : ${tanggal}, Jam : ${jam}` },
+                        { role: "user", content: `${text}.` }
+                    ],
+                    prompt: text,
+                    model: "gpt-3.5-turbo",
+                    markdown: false
+                };
+                const response = await axios.post(url, body, { headers });
+                return response.data;
+            }
+
+            const hasil_nya = await gptResponse(text);
+	    const ress = {
+                model: `${hasil_nya.model}`,
+                gpt: `${hasil_nya.gpt}`
+	    }
+            res.json({
+                status: true,
+                creator: `RizzPiw`,
+                result: ress,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
+});
+
+// other
 router.get("/other/github-stalk", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	var text = req.query.username;
