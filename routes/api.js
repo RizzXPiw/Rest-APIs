@@ -2909,6 +2909,58 @@ router.get("/ai/simi", async (req, res, next) => {
   }
 });
 
+router.get("/ai/gpt", async (req, res, next) => {
+    var apikey = req.query.apikey;
+    var text = req.query.text;
+
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!text)
+        return res.json({
+            status: false,
+            creator: `RizzPiw`,
+            message: "Masukkan Teks Nya",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+          const gptResponse = async (text) => {
+          const today = new Date();
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+         const hari = today.toLocaleDateString('id-ID', { weekday: 'long' });
+         const tanggal = today.toLocaleDateString('id-ID', options);
+         const jam = today.toLocaleTimeString('id-ID');
+                const url = 'https://nexra.aryahcr.cc/api/chat/gpt';
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                const body = {
+                    messages: [
+                        { role: "assistant", content: "Hallo, Nama Saya Adalah 𝗭𝗵𝗲𝗲𝗥𝗲𝘅𝘅 - 𝗔𝗜 yang dibuat oleh 𝗥𝗶𝘇𝘇𝗣𝗶𝘄. Saya dapat membantu kamu dalam membuat berbagai hal seperti menyelesaikan tugas, membuat bahasa pemrograman, dll. Kamu Dapat Mencari Jawaban Bantuan Melalui Website Seperti https://google.com, openai.com, dan website pintar lainnya serta kamu dapat mengakses media sosial seperti instagram, facebook, Twitter, Youtube agar pengetahuan kamu lebih luas, semakin pintar dan real time, Hari : ${hari}, Tanggal : ${tanggal}, Jam : ${jam}" },
+                        { role: "user", content: `${text}.` }
+                    ],
+                    prompt: text,
+                    model: "GPT-4",
+                    markdown: false
+                };
+                const response = await axios.post(url, body, { headers });
+                return response.data;
+            }
+
+            const hasil_nya = await gptResponse(text);
+            res.json({
+                status: true,
+                creator: `RizzPiw`,
+                result: hasil_nya,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
+});
+
 // other
 
 router.get("/other/github-stalk", async (req, res, next) => {
