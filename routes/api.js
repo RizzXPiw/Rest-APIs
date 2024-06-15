@@ -9,6 +9,8 @@ var fetch = require("node-fetch");
 var cheerio = require("cheerio");
 var request = require("request");
 var fs = require("fs");
+var dns = require('dns');
+var ipRange = require('ip-range-check');
 var router = express.Router();
 var creator = global.creator;
 const listkey = global.apikey;
@@ -3019,6 +3021,84 @@ router.get("/ai/gpt-3turbo", async (req, res, next) => {
     } else {
         res.json(loghandler.apikey);
     }
+});
+
+// Tools
+router.get("/tools/subfinder", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var domain = req.query.domain;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!domain)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan domain yang ingin diperiksa.",
+    });
+
+  if (listkey.includes(apikey)) {
+  async function checkDNS(domain) {
+const CF_RANGE = [
+  "173.245.48.0/20",
+  "103.21.244.0/22",
+  "103.22.200.0/22",
+  "103.31.4.0/22",
+  "141.101.64.0/18",
+  "108.162.192.0/18",
+  "190.93.240.0/20",
+  "188.114.96.0/20",
+  "197.234.240.0/22",
+  "198.41.128.0/17",
+  "162.158.0.0/15",
+  "104.16.0.0/13",
+  "104.24.0.0/14",
+  "172.64.0.0/13",
+  "131.0.72.0/22"
+];
+  console.log("Checking DNS: " + domain);
+  try {
+    let addresses = await dns.promises.resolve4(domain);
+    let isCloudflare = ipRange(addresses[0], CF_RANGE);
+    console.log(`${domain}: ${addresses}`);
+    console.log(`CloudFlare Proxy: ${isCloudflare ? "Yes" : "No"}`);
+    console.log("");
+    return { domain, dns: addresses, cf_proxy: isCloudflare };
+  } catch (e) {
+    console.log(`DNS Inactive: ${domain}`);
+    console.log("");
+    return { domain, dns: null };
+  }
+}
+    try {
+      let subdomains = [];
+      let results = [];
+
+      let response = await fetch(`https://crt.sh/?q=${domain}&output=json`);
+      let data = await response.json();
+      
+      for (let entry of data) {
+        subdomains.push(...entry.name_value.split("\n"));
+      }
+
+      let uniqueSubdomains = [...new Set(subdomains.filter(sub => !sub.startsWith("*")))];
+
+      for (let subdomain of uniqueSubdomains) {
+        let result = await checkDNS(subdomain);
+        results.push(result);
+      }
+
+      res.json({
+        status: true,
+        creator: `RizzPiw`,
+        result: results,
+      });
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
 });
 
 // other
