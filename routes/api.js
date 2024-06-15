@@ -2950,7 +2950,8 @@ router.get("/ai/gpt", async (req, res, next) => {
             res.json({
                 status: true,
                 creator: `RizzPiw`,
-                result: `${hasil_nya.model}\n${hasil_nya.gpt}`,
+                result: `model: ${hasil_nya.model}
+		gpt: ${hasil_nya.gpt}`,
             });
         } catch (e) {
             console.log(e);
