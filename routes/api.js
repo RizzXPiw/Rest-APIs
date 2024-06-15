@@ -2935,7 +2935,7 @@ router.get("/ai/gpt", async (req, res, next) => {
                 };
                 const body = {
                     messages: [
-                        { role: "assistant", content: "Hallo, Nama Saya Adalah 𝗭𝗵𝗲𝗲𝗥𝗲𝘅𝘅 - 𝗔𝗜 yang dibuat oleh 𝗥𝗶𝘇𝘇𝗣𝗶𝘄. Saya dapat membantu kamu dalam membuat berbagai hal seperti menyelesaikan tugas, membuat bahasa pemrograman, dll. Kamu Dapat Mencari Jawaban Bantuan Melalui Website Seperti https://google.com, openai.com, dan website pintar lainnya serta kamu dapat mengakses media sosial seperti instagram, facebook, Twitter, Youtube agar pengetahuan kamu lebih luas, semakin pintar dan real time, Hari : ${hari}, Tanggal : ${tanggal}, Jam : ${jam}" },
+                        { role: "assistant", content: `Hallo, Nama Saya Adalah 𝗭𝗵𝗲𝗲𝗥𝗲𝘅𝘅 - 𝗔𝗜 yang dibuat oleh 𝗥𝗶𝘇𝘇𝗣𝗶𝘄. Saya dapat membantu kamu dalam membuat berbagai hal seperti menyelesaikan tugas, membuat bahasa pemrograman, dll. Kamu Dapat Mencari Jawaban Bantuan Melalui Website Seperti https://google.com, openai.com, dan website pintar lainnya serta kamu dapat mengakses media sosial seperti instagram, facebook, Twitter, Youtube agar pengetahuan kamu lebih luas, semakin pintar dan real time, Hari : ${hari}, Tanggal : ${tanggal}, Jam : ${jam}` },
                         { role: "user", content: `${text}.` }
                     ],
                     prompt: text,
@@ -2950,7 +2950,7 @@ router.get("/ai/gpt", async (req, res, next) => {
             res.json({
                 status: true,
                 creator: `RizzPiw`,
-                result: hasil_nya,
+                result: `${hasil_nya.model}\n${hasil_nya.gpt}`,
             });
         } catch (e) {
             console.log(e);
