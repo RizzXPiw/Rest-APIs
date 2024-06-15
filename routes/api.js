@@ -3024,20 +3024,6 @@ router.get("/ai/gpt-3turbo", async (req, res, next) => {
 });
 
 // Tools
-router.get("/tools/subfinder", async (req, res, next) => {
-  var apikey = req.query.apikey;
-  var domain = req.query.domain;
-
-  if (!apikey) return res.json(loghandler.noapikey);
-  if (!domain)
-    return res.json({
-      status: false,
-      creator: `RizzPiw`,
-      message: "Masukkan domain yang ingin diperiksa.",
-    });
-
-  if (listkey.includes(apikey)) {
-  async function checkDNS(domain) {
 const CF_RANGE = [
   "173.245.48.0/20",
   "103.21.244.0/22",
@@ -3055,30 +3041,51 @@ const CF_RANGE = [
   "172.64.0.0/13",
   "131.0.72.0/22"
 ];
-  console.log("Checking DNS: " + domain);
-  try {
-    let addresses = await dns.promises.resolve4(domain);
-    let isCloudflare = ipRange(addresses[0], CF_RANGE);
-    console.log(`${domain}: ${addresses}`);
-    console.log(`CloudFlare Proxy: ${isCloudflare ? "Yes" : "No"}`);
-    console.log("");
-    return { domain, dns: addresses, cf_proxy: isCloudflare };
-  } catch (e) {
-    console.log(`DNS Inactive: ${domain}`);
-    console.log("");
-    return { domain, dns: null };
-  }
-}
+
+router.get("/tools/subfinder", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var domain = req.query.domain;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!domain)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan domain yang ingin diperiksa.",
+    });
+
+  if (listkey.includes(apikey)) {
+    async function checkDNS(domain) {
+      console.log("Checking DNS: " + domain);
+      try {
+        let addresses = await dns.promises.resolve4(domain);
+        let isCloudflare = ipRange(addresses[0], CF_RANGE);
+        console.log(`${domain}: ${addresses}`);
+        console.log(`CloudFlare Proxy: ${isCloudflare ? "Yes" : "No"}`);
+        console.log("");
+        return { domain, dns: addresses, cf_proxy: isCloudflare };
+      } catch (e) {
+        console.log(`DNS Inactive: ${domain}`);
+        console.log("");
+        return { domain, dns: null };
+      }
+    }
+
     try {
       let subdomains = [];
       let results = [];
 
+      console.log(`Fetching subdomains for domain: ${domain}`);
       let response = await fetch(`https://crt.sh/?q=${domain}&output=json`);
       let data = await response.json();
-      
+
+      console.log(`Received data from crt.sh: ${JSON.stringify(data, null, 2)}`);
+
       for (let entry of data) {
         subdomains.push(...entry.name_value.split("\n"));
       }
+
+      console.log(`Extracted subdomains: ${JSON.stringify(subdomains, null, 2)}`);
 
       let uniqueSubdomains = [...new Set(subdomains.filter(sub => !sub.startsWith("*")))];
 
@@ -3086,6 +3093,8 @@ const CF_RANGE = [
         let result = await checkDNS(subdomain);
         results.push(result);
       }
+
+      console.log(`Final results: ${JSON.stringify(results, null, 2)}`);
 
       res.json({
         status: true,
