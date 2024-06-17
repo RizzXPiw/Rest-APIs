@@ -23,6 +23,7 @@ const { fetchJson } = require(__path + "/lib/fetcher.js");
 const options = require(__path + "/lib/options.js");
 const { getBuffer } = require(__path + "/lib/functions.js");
 const oxy = require(__path + "/lib/oxy.js");
+const { downloadYouTubeVideo } = require(__path + "/lib/ytmp4.js");
 
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
@@ -516,37 +517,56 @@ router.get("/download/mediafire", async (req, res, next) => {
 });
 
 router.get("/download/ytmp4", async (req, res, next) => {
-	var apikey = req.query.apikey;
-	var url = req.query.url;
-	if (!apikey) return res.json(loghandler.noapikey);
-	if (!url)
-		return res.json({
-			status: false,
-			creator: `Zeltoria`,
-			message: "Linknya Mana Anying?",
-		});
-	if (listkey.includes(apikey)) {
-		const { id, thumbnail, video: _video, title } = await scr.youtubedlv2(url);
-		try {
-			for (let i in _video) {
-				video = _video[i];
-				let kin = await video.download();
-				res.json({
-					id: id,
-					thumbnail: thumbnail,
-					title: title,
-					size: video.fileSize,
-					download: kin,
-				});
-			}
-		} catch {
-			console.log(e);
-			res.json(loghandler.error);
-		}
-	} else {
-		res.json(loghandler.apikey);
-	}
+  var apikey = req.query.apikey;
+  var url = req.query.url;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!url)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan URL YouTube yang ingin diambil informasinya.",
+    });
+
+  if (listkey.includes(apikey)) {
+    try {
+      const downloadYtmp4 = async (url) => {
+  try {
+    // Mendapatkan info video
+    const info = await ytdl.getInfo(url);
+    const videoDetails = info.videoDetails;
+
+    // Mengumpulkan informasi yang diinginkan
+    const videoInfo = {
+      title: videoDetails.title,
+      author: videoDetails.author.name,
+      thumbnail: videoDetails.thumbnails[videoDetails.thumbnails.length - 1].url, // Mengambil thumbnail resolusi tertinggi
+      views: videoDetails.viewCount,
+      uploadDate: videoDetails.uploadDate,
+      description: videoDetails.description,
+      video_url: videoDetails.video_url,
+    };
+
+    return videoInfo;
+  } catch (err) {
+    console.error(`Failed to fetch video info: ${err.message}`);
+    throw err;
+  }
+}
+      res.json({
+        status: true,
+        creator: `RizzPiw`,
+        result: videoInfo,
+      });
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
 });
+
 // news
 router.get("/news/cnn", async (req, res, next) => {
 	var apikey = req.query.apikey;
