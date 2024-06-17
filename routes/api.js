@@ -16,6 +16,7 @@ var creator = global.creator;
 const listkey = global.apikey;
 
 const api = require('caliph-api')
+const ytdl = require('ytdl-core')
 const Frieren = require("@xct007/frieren-scraper");
 const scr = require("@bochilteam/scraper");
 const { color, bgcolor } = require(__path + "/lib/color.js");
@@ -23,7 +24,6 @@ const { fetchJson } = require(__path + "/lib/fetcher.js");
 const options = require(__path + "/lib/options.js");
 const { getBuffer } = require(__path + "/lib/functions.js");
 const oxy = require(__path + "/lib/oxy.js");
-const { downloadYouTubeVideo } = require(__path + "/lib/ytmp4.js");
 
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
@@ -560,7 +560,7 @@ router.get("/download/ytmp4", async (req, res, next) => {
       });
     } catch (e) {
       console.log(e);
-      res.json(loghandler.error);
+      res.json(`${e.message}`);
     }
   } else {
     res.json(loghandler.apikey);
