@@ -444,38 +444,60 @@ router.get("/download/tiktok", (req, res, next) => {
 	}
 });
 router.get("/download/ytmp3", async (req, res, next) => {
-	var apikey = req.query.apikey;
-	var url = req.query.url;
-	if (!apikey) return res.json(loghandler.noapikey);
-	if (!url)
-		return res.json({
-			status: false,
-			creator: `Zeltoria`,
-			message: "Linknya Mana Anying?",
-		});
-	if (listkey.includes(apikey)) {
-		const { id, thumbnail, audio: _audio, title } = await scr.youtubedlv2(url);
-		try {
-			for (let i in _audio) {
-				audio = _audio[i];
-				let kin = await audio.download();
-				res.json({
-					id: id,
-					thumbnail: thumbnail,
-					title: title,
-					size: audio.fileSize,
-					download: kin,
-				});
-			}
-		} catch {
-			console.log(e);
-			res.json(loghandler.error);
-		}
-	} else {
-		res.json(loghandler.apikey);
-	}
-});
+  var apikey = req.query.apikey;
+  var url = req.query.url;
 
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!url)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan URL YouTube.",
+    });
+
+  if (listkey.includes(apikey)) {
+    try {
+      const downloadYtmp3 = async (url) => {
+        try {
+          // Mendapatkan info video
+          const info = await ytdl.getInfo(url);
+          const videoDetails = info.videoDetails;
+
+          // Mendapatkan format unduhan audio
+          const format = ytdl.chooseFormat(info.formats, { quality: 'highestaudio' });
+          
+          // Mengumpulkan informasi yang diinginkan
+          const videoInfo = {
+            title: videoDetails.title,
+            author: videoDetails.author.name,
+            thumbnail: videoDetails.thumbnails[videoDetails.thumbnails.length - 1].url, // Mengambil thumbnail resolusi tertinggi
+            views: videoDetails.viewCount,
+            uploadDate: videoDetails.uploadDate,
+            description: videoDetails.description,
+            audio_url: format.url, // Link download audio
+          };
+
+          return videoInfo;
+        } catch (err) {
+          console.error(`Failed to fetch video info: ${err.message}`);
+          throw err;
+        }
+      };
+
+      const videoInfo = await downloadYtmp3(url);
+      res.json({
+        status: true,
+        creator: `RizzPiw`,
+        result: videoInfo,
+      });
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
+});
 router.get("/download/mediafire", async (req, res, next) => {
     var apikey = req.query.apikey;
     var url = req.query.url;
