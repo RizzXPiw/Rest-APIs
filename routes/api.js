@@ -531,28 +531,33 @@ router.get("/download/ytmp4", async (req, res, next) => {
   if (listkey.includes(apikey)) {
     try {
       const downloadYtmp4 = async (url) => {
-  try {
-    // Mendapatkan info video
-    const info = await ytdl.getInfo(url);
-    const videoDetails = info.videoDetails;
+        try {
+          // Mendapatkan info video
+          const info = await ytdl.getInfo(url);
+          const videoDetails = info.videoDetails;
 
-    // Mengumpulkan informasi yang diinginkan
-    const videoInfo = {
-      title: videoDetails.title,
-      author: videoDetails.author.name,
-      thumbnail: videoDetails.thumbnails[videoDetails.thumbnails.length - 1].url, // Mengambil thumbnail resolusi tertinggi
-      views: videoDetails.viewCount,
-      uploadDate: videoDetails.uploadDate,
-      description: videoDetails.description,
-      video_url: videoDetails.video_url,
-    };
+          // Mendapatkan format unduhan
+          const format = ytdl.chooseFormat(info.formats, { quality: 'highestvideo' });
+          
+          // Mengumpulkan informasi yang diinginkan
+          const videoInfo = {
+            title: videoDetails.title,
+            author: videoDetails.author.name,
+            thumbnail: videoDetails.thumbnails[videoDetails.thumbnails.length - 1].url, // Mengambil thumbnail resolusi tertinggi
+            views: videoDetails.viewCount,
+            uploadDate: videoDetails.uploadDate,
+            description: videoDetails.description,
+            video_url: format.url, // Link download video
+          };
 
-    return videoInfo;
-  } catch (err) {
-    console.error(`Failed to fetch video info: ${err.message}`);
-    throw err;
-  }
-}
+          return videoInfo;
+        } catch (err) {
+          console.error(`Failed to fetch video info: ${err.message}`);
+          throw err;
+        }
+      };
+
+      const videoInfo = await downloadYtmp4(url);
       res.json({
         status: true,
         creator: `RizzPiw`,
