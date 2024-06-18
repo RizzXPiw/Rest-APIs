@@ -17,6 +17,7 @@ const listkey = global.apikey;
 
 const api = require('caliph-api')
 const ytdl = require('ytdl-core')
+const yts = require('yt-search')
 const Frieren = require("@xct007/frieren-scraper");
 const scr = require("@bochilteam/scraper");
 const { color, bgcolor } = require(__path + "/lib/color.js");
@@ -923,6 +924,70 @@ router.get("/search/soundcloudsearch", async (req, res, next) => {
 		res.json(loghandler.apikey);
 	}
 });
+
+router.get("/search/yt", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var query = req.query.query;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!query)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan parameter query.",
+    });
+
+  if (listkey.includes(apikey)) {
+    try {
+      const ytSearch = async (query) => {
+        try {
+          const searchResults = await yts(query);
+          const videos = searchResults.videos;
+
+          const results = [];
+
+          for (let video of videos) {
+            // Mendapatkan informasi tambahan seperti jumlah likes dan musik yang digunakan (jika ada)
+            const videoDetails = await yts({ videoId: video.videoId });
+
+            const videoInfo = {
+              title: video.title,
+              thumbnail: video.thumbnail,
+              link: video.url,
+              mp4Link: `https://www.y2mate.com/youtube/${video.videoId}`, // Link download MP4 via y2mate
+              mp3Link: `https://www.y2mate.com/youtube/${video.videoId}`, // Link download MP3 via y2mate (sama, nanti pilih format)
+              musicUsed: videoDetails.music || 'N/A', // Musik yang digunakan, jika ada
+              creator: video.author.name,
+              views: video.views,
+              likes: videoDetails.likes || 'N/A', // Jumlah likes, jika tersedia
+              duration: video.timestamp,
+              uploaded: video.ago
+            };
+            results.push(videoInfo);
+          }
+
+          return results;
+        } catch (error) {
+          console.error('Error searching YouTube:', error);
+          return [];
+        }
+      }
+
+      const searchResults = await ytSearch(query);
+      res.json({
+        status: true,
+        creator: `RizzPiw`,
+        result: searchResults,
+      });
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
+});
+
 router.get("/search/wallpaper", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	var text = req.query.query;
