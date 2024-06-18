@@ -1,7 +1,6 @@
 __path = process.cwd();
 
 require("../settings.js");
-const { Tiktok } = require("@xct007/tiktok-scraper");
 var express = require("express");
 var axios = require("axios");
 var qs = require("qs");
@@ -18,7 +17,6 @@ const listkey = global.apikey;
 const api = require('caliph-api')
 const ytdl = require('ytdl-core')
 const yts = require('yt-search')
-const TikTokScraper = require('tiktok-scraper')
 const Frieren = require("@xct007/frieren-scraper");
 const scr = require("@bochilteam/scraper");
 const { color, bgcolor } = require(__path + "/lib/color.js");
