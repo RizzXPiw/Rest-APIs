@@ -942,7 +942,7 @@ router.get("/search/yt", async (req, res, next) => {
       const ytSearch = async (query) => {
         try {
           const searchResults = await yts(query);
-          const videos = searchResults.videos;
+	  const videos = searchResults.videos.slice(0, 5);
 
           const results = [];
 
