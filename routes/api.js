@@ -3156,7 +3156,7 @@ router.get("/tools/subfinder", async (req, res, next) => {
   }
 });
 
-// other
+// Stalker
 router.get("/other/github-stalk", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	var text = req.query.username;
@@ -3187,6 +3187,67 @@ router.get("/other/github-stalk", async (req, res, next) => {
 		res.json(loghandler.apikey);
 	}
 });
+
+router.get("/stalker/tiktok-stalk", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var username = req.query.username;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!username)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan parameter username.",
+    });
+
+  if (listkey.includes(apikey)) {
+    try {
+      async function tiktokStalk(user) {
+        try {
+          const url = await fetch(`https://tiktok.com/@${user}`, {
+            headers: {
+              'User-Agent': 'PostmanRuntime/7.32.2'
+            }
+          });
+          const html = await url.text();
+          const $ = cheerio.load(html);
+          const data = $('#__UNIVERSAL_DATA_FOR_REHYDRATION__').text();
+          const result = JSON.parse(data);
+          if (result['__DEFAULT_SCOPE__']['webapp.user-detail'].statusCode !== 0) {
+            const ress = {
+              status: 'error',
+              message: 'User not found!',
+            };
+            console.log(ress);
+            return ress;
+          }
+          const res = result['__DEFAULT_SCOPE__']['webapp.user-detail']['userInfo'];
+          return res;
+        } catch (err) {
+          console.log(err);
+          return {
+            status: 'error',
+            message: err.message
+          };
+        }
+      }
+
+      const userInfo = await tiktokStalk(username);
+      res.json({
+        status: true,
+        creator: `RizzPiw`,
+        result: userInfo,
+      });
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
+});
+
+// Other
 router.get("/other/hilih", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	var text = req.query.kata;
