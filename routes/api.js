@@ -942,7 +942,7 @@ router.get("/search/yt", async (req, res, next) => {
       const ytSearch = async (query) => {
         try {
           const searchResults = await yts(query);
-	  const videos = searchResults.videos.slice(0, 5);
+	  const videos = searchResults.videos.slice(0, 10);
 
           const results = [];
 
@@ -954,14 +954,14 @@ router.get("/search/yt", async (req, res, next) => {
               title: video.title,
               thumbnail: video.thumbnail,
               link: video.url,
-              mp4Link: `https://www.y2mate.com/youtube/${video.videoId}`, // Link download MP4 via y2mate
-              mp3Link: `https://www.y2mate.com/youtube/${video.videoId}`, // Link download MP3 via y2mate (sama, nanti pilih format)
               musicUsed: videoDetails.music || 'N/A', // Musik yang digunakan, jika ada
+              channel: video.author.url,
               creator: video.author.name,
               views: video.views,
               likes: videoDetails.likes || 'N/A', // Jumlah likes, jika tersedia
               duration: video.timestamp,
-              uploaded: video.ago
+              uploaded: video.ago,
+	      description: video.description
             };
             results.push(videoInfo);
           }
