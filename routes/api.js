@@ -423,26 +423,59 @@ router.get("/download/pinterest", async (req, res, next) => {
 		res.json(loghandler.apikey);
 	}
 });
-router.get("/download/tiktok", (req, res, next) => {
-	var apikey = req.query.apikey;
-	var url = req.query.url;
-	if (!apikey) return res.json(loghandler.noapikey);
-	if (!url)
-		return res.json({
-			status: false,
-			creator: `Zeltoria`,
-			message: "Linknya Mana Anying?",
-		});
-	if (listkey.includes(apikey)) {
-		Tiktok(url).then((data) => {
-			if (!data.status) {
-				return res.json(loghandler.error);
-			}
-			res.json(data);
-		});
-	} else {
-		res.json(loghandler.apikey);
-	}
+router.get("/download/tiktok", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var url = req.query.url;
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!url)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan URL TikTok.",
+    });
+  if (listkey.includes(apikey)) {
+    try {
+      const downloadTikTokVideo = async (url) => {
+        try {
+          const response = await fetch(`https://api.tiklydown.eu.org/api/download/v3?url=${encodeURIComponent(url)}`);
+          const data = await response.json();
+
+          const result = {
+            type: data.result.type,
+            desc: data.result.desc,
+            avatar: data.result.author.avatar,
+            nickname: data.result.author.nickname,
+            like: data.result.statistics.likeCount,
+            comment: data.result.statistics.commentCount,
+            share: data.result.statistics.shareCount,
+            mp4: data.result.video,  // assuming data.result.video contains the MP4 URL
+            mp3: data.result.music   // assuming data.result.music contains the MP3 URL
+          };
+
+          return result;
+        } catch (error) {
+          console.error('Error fetching TikTok video:', error);
+          return null;
+        }
+      }
+
+      const result = await downloadTikTokVideo(url);
+      if (result) {
+        res.json({
+          status: true,
+          creator: `RizzPiw`,
+          result: result,
+        });
+      } else {
+        res.json(loghandler.error);
+      }
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
 });
 router.get("/download/ytmp3", async (req, res, next) => {
   var apikey = req.query.apikey;
