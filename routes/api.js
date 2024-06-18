@@ -18,6 +18,7 @@ const listkey = global.apikey;
 const api = require('caliph-api')
 const ytdl = require('ytdl-core')
 const yts = require('yt-search')
+const TikTokScraper = require('tiktok-scraper')
 const Frieren = require("@xct007/frieren-scraper");
 const scr = require("@bochilteam/scraper");
 const { color, bgcolor } = require(__path + "/lib/color.js");
@@ -1011,6 +1012,74 @@ router.get("/search/yt", async (req, res, next) => {
         status: true,
         creator: `RizzPiw`,
         result: searchResults,
+      });
+    } catch (e) {
+      console.log(e);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
+});
+
+router.get("/search/tiktok", async (req, res, next) => {
+  var apikey = req.query.apikey;
+  var query = req.query.query;
+
+  if (!apikey) return res.json(loghandler.noapikey);
+  if (!query)
+    return res.json({
+      status: false,
+      creator: `RizzPiw`,
+      message: "Masukkan query yang ingin dicari.",
+    });
+
+  if (listkey.includes(apikey)) {  
+    try {
+    const searchTikTok = async (query) => {
+  try {
+    const result = await TikTokScraper.scrape(query, {
+      number: 10,
+      by_user_id: false
+    });
+
+    const videos = result.collector.map(video => ({
+      link: video.webVideoUrl,
+      duration: video.videoMeta.duration,
+      like: video.diggCount,
+      share: video.shareCount,
+      comment: video.commentCount,
+      title: video.text,
+      author: {
+        name: video.authorMeta.name,
+        nickName: video.authorMeta.nickName,
+        avatar: video.authorMeta.avatar,
+        fans: video.authorMeta.fans,
+        following: video.authorMeta.following,
+        heart: video.authorMeta.heart,
+        video: video.authorMeta.video,
+        digg: video.authorMeta.digg
+      },
+      music: {
+        title: video.musicMeta.musicName,
+        author: video.musicMeta.musicAuthor,
+        original: video.musicMeta.musicOriginal,
+        playUrl: video.musicMeta.playUrl,
+      },
+      cover: video.covers.default
+    }));
+
+    return videos;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+      const videos = await searchTikTok(query);
+      res.json({
+        status: true,
+        creator: `RizzPiw`,
+        result: videos,
       });
     } catch (e) {
       console.log(e);
