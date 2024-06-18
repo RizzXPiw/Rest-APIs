@@ -8,7 +8,6 @@ var fetch = require("node-fetch");
 var cheerio = require("cheerio");
 var request = require("request");
 var fs = require("fs");
-var puppeteer = require('puppeteer');
 var dns = require('dns');
 var ipRange = require('ip-range-check');
 var router = express.Router();
@@ -1019,6 +1018,71 @@ router.get("/search/yt", async (req, res, next) => {
   } else {
     res.json(loghandler.apikey);
   }
+});
+
+router.get("/search/tiktok", async (req, res, next) => {
+    var apikey = req.query.apikey;
+    var query = req.query.query;
+
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!query)
+        return res.json({
+            status: false,
+            creator: `RizzPiw`,
+            message: "Masukkan query yang ingin dicari.",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+        const searchTikTok = async (query) => {
+    try {
+        const response = await axios.get(`https://www.tiktok.com/search?q=${encodeURIComponent(query)}`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+
+        const html = response.data;
+        const $ = cheerio.load(html);
+        const videos = [];
+
+        $('.tiktok-1f6f7vd-DivContainer').each((index, element) => {
+            const link = $(element).find('a').attr('href');
+            const duration = $(element).find('.video-duration').text();
+            const like = $(element).find('.like-count').text();
+            const share = $(element).find('.share-count').text();
+            const comment = $(element).find('.comment-count').text();
+            const title = $(element).find('.video-title').text();
+
+            videos.push({
+                link: link ? `https://www.tiktok.com${link}` : '',
+                duration: duration || '',
+                like: like || '',
+                share: share || '',
+                comment: comment || '',
+                title: title || ''
+            });
+        });
+
+        return videos;
+    } catch (error) {
+        console.error('Error fetching TikTok search results:', error);
+        return [];
+    }
+}
+            const videos = await searchTikTok(query);
+            res.json({
+                status: true,
+                creator: `RizzPiw`,
+                result: videos,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
 });
 
 router.get("/search/wallpaper", async (req, res, next) => {
