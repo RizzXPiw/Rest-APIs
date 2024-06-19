@@ -1085,6 +1085,37 @@ router.get("/search/tiktok", async (req, res, next) => {
     }
 });
 
+router.get("/search/sfile", async (req, res, next) => {
+const sfileSearch = require(__path + "/lib/sfile.js");
+    var apikey = req.query.apikey;
+    var query = req.query.query;
+    var page = req.query.page || 1;
+
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!query)
+        return res.json({
+            status: false,
+            creator: `RizzPiw`,
+            message: "Masukkan query yang ingin dicari.",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+            const results = await sfileSearch(query, page);
+            res.json({
+                status: true,
+                creator: `RizzPiw`,
+                result: results,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
+});
+
 router.get("/search/wallpaper", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	var text = req.query.query;
