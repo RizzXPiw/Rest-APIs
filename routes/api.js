@@ -1109,7 +1109,7 @@ const sfileSearch = require(__path + "/lib/sfile.js");
             });
         } catch (e) {
             console.log(e);
-            res.json(loghandler.error);
+            res.json(`${e.message}`);
         }
     } else {
         res.json(loghandler.apikey);
