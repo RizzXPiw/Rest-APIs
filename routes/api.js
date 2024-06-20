@@ -27,7 +27,7 @@ const oxy = require(__path + "/lib/oxy.js");
 const GoogleBard = require(__path + "/lib/bard.js");
 
 //============[ Stalker ]============//
-const githubstalk = require("../lib/githubstalk.js");
+const { githubstalk } = require("../lib/githubstalk.js");
 
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
