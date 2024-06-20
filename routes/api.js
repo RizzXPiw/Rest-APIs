@@ -24,6 +24,7 @@ const { fetchJson } = require(__path + "/lib/fetcher.js");
 const options = require(__path + "/lib/options.js");
 const { getBuffer } = require(__path + "/lib/functions.js");
 const oxy = require(__path + "/lib/oxy.js");
+const GoogleBard = require(__path + "/lib/bard.js");
 
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
@@ -3313,7 +3314,6 @@ router.get("/ai/gpt-3turbo", async (req, res, next) => {
 });
 
 router.get("/ai/bard", async (req, res) => {
-  const GoogleBard = require(__path + "/lib/bard.js");
   const apikey = req.query.apikey;
   const text = req.query.q;
 
@@ -3338,7 +3338,7 @@ router.get("/ai/bard", async (req, res) => {
       });
     } catch (e) {
       console.error(e);
-      res.json(loghandler.error);
+      res.json(`${e.message}`);
     }
   } else {
     res.json(loghandler.apikey);
