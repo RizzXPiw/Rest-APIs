@@ -31,6 +31,9 @@ const GoogleBard = require(__path + "/lib/bard.js");
 //============[ Stalker ]============//
 const { githubstalk } = require("../lib/githubstalk.js");
 
+//============[ Tools ]============//
+const { spekhp } = require('../lib/spek_hp.js');
+
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
 _ = require("lodash");
@@ -1274,7 +1277,6 @@ router.get("/search/pinterest", async (req, res, next) => {
 
 // Tools
 router.get("/tools/spekhp", async (req, res) => {
-const { spekhp } require('../lib/spek_hp.js')
 const apikey = req.query.apikey;
 const text = req.query.hp;
 
