@@ -3312,6 +3312,37 @@ router.get("/ai/gpt-3turbo", async (req, res, next) => {
     }
 });
 
+router.get("/ai/bard", async (req, res, next) => {
+   const GoogleBard = require(__path + "/lib/bard.js");
+    var apikey = req.query.apikey;
+    var text = req.query.q;
+
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!text)
+        return res.json({
+            status: false,
+            creator: `RizzPiw`,
+            message: "Masukkan Query Nya",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+        const results = await GoogleBard(text);
+            res.json({
+                status: true,
+                creator: `RizzPiw`,
+                result: results,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(`${e.message}`);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
+});
+
 // Tools
 router.get("/tools/subfinder", async (req, res, next) => {
   var apikey = req.query.apikey;
