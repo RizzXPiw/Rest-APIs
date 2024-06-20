@@ -3435,36 +3435,32 @@ router.get("/tools/subfinder", async (req, res, next) => {
 });
 
 // Stalker
-router.get("/stalker/github-stalk", async (req, res) => {
-  const apikey = req.query.apikey;
-  const text = req.query.username;
+router.get("/stalker/github-stalk", async (req, res, next) => {
+    var apikey = req.query.apikey;
+    var username = req.query.username;
 
-  if (!apikey) {
-    return res.json(loghandler.noapikey);
-  }
-  if (!text) {
-    return res.json({
-      status: false,
-      creator: "RizzPiw",
-      message: "Masukkan Username Nya",
-    });
-  }
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!username)
+        return res.json({
+            status: false,
+            creator: 'RizzPiw',
+            message: "Masukkan parameter username",
+        });
 
-  if (listkey.includes(apikey)) {
-    try {
-      const results = await githubstalk(text);
-      res.json({
-        status: true,
-        creator: "RizzPiw",
-        result: results,
-      });
-    } catch (e) {
-      console.error(e);
-      res.json(`${e.message}`);
+    if (listkey.includes(apikey)) {
+        try {
+            const result = await githubstalk(username);
+            res.json({
+                author: "RizzPiw",
+                result,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
     }
-  } else {
-    res.json(loghandler.apikey);
-  }
 });
 
 router.get("/stalker/tiktok-stalk", async (req, res, next) => {
