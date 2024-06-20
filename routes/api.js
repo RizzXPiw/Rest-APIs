@@ -1272,6 +1272,40 @@ router.get("/search/pinterest", async (req, res, next) => {
 	}
 });
 
+// Tools
+router.get("/tools/spekhp", async (req, res) => {
+const { spekhp } require('../lib/spek_hp.js')
+const apikey = req.query.apikey;
+const text = req.query.hp;
+
+if (!apikey) return res.json(loghandler.noapikey);
+    
+    if (!text) {
+        return res.json({
+            status: false,
+            creator: 'RizzPiw',
+            message: "Masukkan parameter hp",
+        });
+    }
+
+    if (listkey.includes(apikey)) {
+        try {
+            const result = await spekhp(text);
+             res.json({
+                status: true,
+                creator: "RizzPiw",
+                result,
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            res.json(error.message);
+            res.json(loghandler.error);
+        }
+    } else {
+        return res.json(loghandler.apikey);
+    }
+});
+
 //nsfw
 router.get("/nsfw/yuri", async (req, res, next) => {
 	var apikey = req.query.apikey;
