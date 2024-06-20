@@ -82,7 +82,7 @@ var randomTextNumber =
  */
 
 //===============[ Info Server ]===============\\
-router.get('/api/status', async (req, res) => {
+router.get('/status', async (req, res) => {
 	try {
 		const date = new Date();
 		const hours = date.getHours();
@@ -115,7 +115,7 @@ router.get('/api/status', async (req, res) => {
 		res.json(status);
 	} catch (error) {
 		console.error(error);
-		res.json(`message: 'Internal Server Error`);
+		res.json(`${error.message}`);
 	}
 });
 
