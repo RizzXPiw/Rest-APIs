@@ -26,6 +26,9 @@ const { getBuffer } = require(__path + "/lib/functions.js");
 const oxy = require(__path + "/lib/oxy.js");
 const GoogleBard = require(__path + "/lib/bard.js");
 
+//============[ Stalker ]============//
+const githubstalk = require(__path + "/lib/githubstalk.js");
+
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
 _ = require("lodash");
@@ -3432,35 +3435,36 @@ router.get("/tools/subfinder", async (req, res, next) => {
 });
 
 // Stalker
-router.get("/other/github-stalk", async (req, res, next) => {
-	var apikey = req.query.apikey;
-	var text = req.query.username;
-	if (!apikey) return res.json(loghandler.noapikey);
-	if (!text)
-		return res.json({
-			status: false,
-			creator: `Zeltoria`,
-			message: "masukan parameter username",
-		});
-	if (listkey.includes(apikey)) {
-		fetch(
-			encodeURI(`https://github-api-zhirrr.vercel.app/api/detailuser?q=${text}`)
-		)
-			.then((response) => response.json())
-			.then((data) => {
-				var result = data;
-				res.json({
-					author: "Zeltoria",
-					result,
-				});
-			})
-			.catch((e) => {
-				console.log(e);
-				res.json(loghandler.error);
-			});
-	} else {
-		res.json(loghandler.apikey);
-	}
+router.get("/stalker/github-stalk", async (req, res) => {
+  const apikey = req.query.apikey;
+  const text = req.query.username;
+
+  if (!apikey) {
+    return res.json(loghandler.noapikey);
+  }
+  if (!text) {
+    return res.json({
+      status: false,
+      creator: "RizzPiw",
+      message: "Masukkan Username Nya",
+    });
+  }
+
+  if (listkey.includes(apikey)) {
+    try {
+      const results = await githubstalk(text);
+      res.json({
+        status: true,
+        creator: "RizzPiw",
+        result: results,
+      });
+    } catch (e) {
+      console.error(e);
+      res.json(`${e.message}`);
+    }
+  } else {
+    res.json(loghandler.apikey);
+  }
 });
 
 router.get("/stalker/tiktok-stalk", async (req, res, next) => {
