@@ -1300,8 +1300,8 @@ if (!apikey) return res.json(loghandler.noapikey);
             });
         } catch (error) {
             console.error('Error:', error);
-            res.json(error.message);
-            res.json(loghandler.error);
+            res.json(`${error.message}`);
+            
         }
     } else {
         return res.json(loghandler.apikey);
