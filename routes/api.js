@@ -77,6 +77,14 @@ for (var i = lenn; i > 0; i--) {
 var randomTextNumber =
 	random + randomlagi + "---------Apriliya-Putri-Fatmawati" + "LOLI--KILLERS";
 
+function muptime(seconds) {
+	const pad = (s) => (s < 10 ? '0' : '') + s;
+	const hours = Math.floor(seconds / 3600);
+	const minutes = Math.floor((seconds % 3600) / 60);
+	const sec = Math.floor(seconds % 60);
+	return `${pad(hours)}:${pad(minutes)}:${pad(sec)}`;
+}
+
 /** @note
  * Liat cara nulis code yang bener
  */
