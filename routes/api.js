@@ -19,6 +19,8 @@ const ytdl = require('ytdl-core')
 const yts = require('yt-search')
 const Frieren = require("@xct007/frieren-scraper");
 const scr = require("@bochilteam/scraper");
+const os = require('os');
+const { performance } = require('perf_hooks');
 const { color, bgcolor } = require(__path + "/lib/color.js");
 const { fetchJson } = require(__path + "/lib/fetcher.js");
 const options = require(__path + "/lib/options.js");
@@ -78,6 +80,44 @@ var randomTextNumber =
 /** @note
  * Liat cara nulis code yang bener
  */
+
+//===============[ Info Server ]===============\\
+router.get('/api/status', async (req, res) => {
+	try {
+		const date = new Date();
+		const hours = date.getHours();
+		const minutes = date.getMinutes();
+		const seconds = date.getSeconds();
+		const start = performance.now();
+		const end = performance.now();
+		const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
+		const totalMemory = (os.totalmem() / 1024 / 1024).toFixed(2);
+		const cpu = os.cpus()[0].model;
+		const port = process.env.PORT || 8080;
+		const ipResponse = await fetch('https://api.ipify.org/?format=json');
+		const ipData = await ipResponse.json();
+
+		const status = {
+			status: 'online',
+			memory: `${memoryUsage} MB / ${totalMemory} MB`,
+			cpu: cpu,
+			port: port,
+			ip: ipData.ip,
+			time: `${hours} : ${minutes} : ${seconds}`,
+			uptime: muptime(process.uptime()),
+			speed: `${(end - start).toFixed(2)} ms`,
+			info: {
+				owner: 'RizzPiw',
+				apikey: 'Chat Owner: https://wa.me/62895614033342',
+			},
+		};
+
+		res.json(status);
+	} catch (error) {
+		console.error(error);
+		res.json(`message: 'Internal Server Error`);
+	}
+});
 
 router.get("/asupan/china", async (req, res, next) => {
 	var apikey = req.query.apikey;
