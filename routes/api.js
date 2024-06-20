@@ -1086,12 +1086,10 @@ router.get("/search/tiktok", async (req, res, next) => {
 });
 
 router.get("/search/sfile", async (req, res, next) => {
-const sfileSearch = require(__path + "/lib/sfile.js");
     var apikey = req.query.apikey;
     var query = req.query.query;
     var page = req.query.page || 1;
-
-    if (!apikey) return res.json(loghandler.noapikey);
+        if (!apikey) return res.json(loghandler.noapikey);
     if (!query)
         return res.json({
             status: false,
@@ -1101,7 +1099,19 @@ const sfileSearch = require(__path + "/lib/sfile.js");
 
     if (listkey.includes(apikey)) {
         try {
-            const results = await sfileSearch(query, page);
+        async function sfileSearch(query, page = 1) {
+    	let res = await fetch(`https://sfile.mobi/search.php?q=${query}&page=${page}`)
+    	let $ = cheerio.load(await res.text())
+    	let result = []
+    	$('div.list').each(function () {
+		let title = $(this).find('a').text()
+		let size = $(this).text().trim().split('(')[1]
+		let link = $(this).find('a').attr('href')
+		if (link) result.push({ title, size: size.replace(')', ''), link })
+	})
+	return result
+}
+       const results = await sfileSearch(query, page);
             res.json({
                 status: true,
                 creator: `RizzPiw`,
