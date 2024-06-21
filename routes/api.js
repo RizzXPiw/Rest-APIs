@@ -3549,6 +3549,35 @@ router.get("/tools/subfinder", async (req, res, next) => {
   }
 });
 
+router.get("/tools/whois", async (req, res, next) => {
+const { whois } = require('../lib/whois.js')
+var apikey = req.query.apikey;
+var text = req.query.domain;
+
+if (!apikey) return res.json(loghandler.noapikey);
+    if (!text) return res.json({
+            status: false,
+            creator: 'RizzPiw',
+            message: "Masukkan parameter domain",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+            const result = await whois(text);
+            res.json({
+                status: true,
+                creator: "RizzPiw",
+                result,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
+});
+
 // Stalker
 router.get("/stalker/github-stalk", async (req, res, next) => {
     var apikey = req.query.apikey;
