@@ -3567,7 +3567,7 @@ if (!apikey) return res.json(loghandler.noapikey);
             res.json({
                 status: true,
                 creator: "RizzPiw",
-                result,
+                result: result,
             });
         } catch (e) {
             console.log(e);
