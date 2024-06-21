@@ -34,6 +34,9 @@ const { githubstalk } = require("../lib/githubstalk.js");
 //============[ Tools ]============//
 const { spekhp } = require('../lib/spek_hp.js');
 
+//============[ AI ]============\\
+const { bingimg } = require('../lib/bing-img.js');
+
 var { Vokal, Base, Searchnabi, Gempa } = require("./../lib");
 
 _ = require("lodash");
@@ -3430,6 +3433,34 @@ router.get("/ai/bard", async (req, res) => {
   } else {
     res.json(loghandler.apikey);
   }
+});
+
+router.get("/ai/bingimg", async (req, res, next) => {
+    var apikey = req.query.apikey;
+    var text = req.query.q;
+
+    if (!apikey) return res.json(loghandler.noapikey);
+    if (!text) return res.json({
+            status: false,
+            creator: 'RizzPiw',
+            message: "Masukkan parameter query",
+        });
+
+    if (listkey.includes(apikey)) {
+        try {
+            const result = await bingimg(text);
+            res.json({
+                status: true,
+                creator: "RizzPiw",
+                result,
+            });
+        } catch (e) {
+            console.log(e);
+            res.json(loghandler.error);
+        }
+    } else {
+        res.json(loghandler.apikey);
+    }
 });
 
 // Tools
