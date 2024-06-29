@@ -1312,6 +1312,25 @@ if (!apikey) return res.json(loghandler.noapikey);
 });
 
 //nsfw
+
+router.get("/nsfw/ass", async (req, res, next) => {
+const ass = require('../lib/ass.js')
+var apikey = req.query.apikey;
+if (!apikey) return res.json(loghandler.noapikey);
+if (listkey.includes(apikey)) {
+var result = ass[Math.floor(Math.random() * ass.length)];
+res.json({
+status: true,
+creator: `${global.creator}`,
+result: {
+url: result,
+}
+})
+} else {
+res.json(loghandler.apikey);
+}
+});
+
 router.get("/nsfw/yuri", async (req, res, next) => {
 	var apikey = req.query.apikey;
 	if (!apikey) return res.json(loghandler.noapikey);
